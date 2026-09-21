@@ -184,6 +184,19 @@ jobs:
           if grep -qP "(^|\s)${packages// /($|\s)|(^|\s)}($|\s)" ./big-pkgs.list; then
             ./scripts/setup-ubuntu.sh
             ./scripts/setup-cgct.sh
+            echo "======================================"
+            echo " CGCT COMPILER VERSION"
+            echo "======================================"
+            /data/data/com.termux/cgct/${{ matrix.target_arch }}/bin/${{ matrix.target_arch }}-linux-gnu-g++ --version || true
+            echo
+            echo "======================================"
+            echo " LIBSTDC++ GLIBC REQUIREMENTS"
+            echo "======================================"
+            strings /data/data/com.termux/cgct/${{ matrix.target_arch }}/lib/libstdc++.so \
+            | grep '^GLIBC_' \
+            | sort -V \
+            | uniq \
+            | tail -20 || true
             sudo apt install ninja-build
             sudo apt purge -yq $(dpkg -l | grep '^ii' | awk '{ print $2 }' | grep -P '(aspnetcore|cabal-|dotnet-|ghc-|libmono|php)') \
               firefox google-chrome-stable microsoft-edge-stable mono-runtime-common monodoc-manual ruby
